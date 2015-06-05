@@ -6,13 +6,7 @@ describe "Méthodes d'entrée/sortie de SuperFile" do
   describe "#write" do
     it { expect(p).to respond_to :write }
     context "avec un dossier" do
-      it { expect(pfolder.write "ça").to eq(false) }
-      it "produit une erreur" do
-        pfolder.errors = nil
-        pfolder.write "ce texte"
-        expect(pfolder.errors).to_not eq(nil)
-        expect(pfolder.errors).to include SuperFile::ERRORS[:cant_write_a_folder]
-      end
+      it { expect{pfolder.write "ça"}.to raise_error "Can't write a folder…" }
     end
     context "avec un fichier" do
       before :all do
@@ -27,11 +21,11 @@ describe "Méthodes d'entrée/sortie de SuperFile" do
     end
     context "avec un fichier dans une hiérarchie inexistante" do
       before :all do
-        @fp = File.join @pfolder, 'provsousfolder'
-        @thefile = SuperFile::new File.join(@fp, 'prov', "thefile.txt")
+        @fp = mytest.pfolder + 'provsousfolder'
+        @thefile = @fp + 'prov' + "thefile.txt"
       end
       after :all do
-         FileUtils::rm_rf @fp if File.exist? @fp
+         @fp.remove if @fp.exist?
       end
       it "construit la hiérarchie de dossier et le fichier" do
         @thefile.write "ce texte provisoire"
@@ -47,7 +41,6 @@ describe "Méthodes d'entrée/sortie de SuperFile" do
     end
     context "avec un fichier inexistant" do
       it "le crée en y mettant le texte et retourne true" do
-        remove_errors
         pfile.remove
         expect(pfile).to_not be_exist
         res = pfile.add "du texte"
@@ -57,16 +50,11 @@ describe "Méthodes d'entrée/sortie de SuperFile" do
       end
     end
     context "avec un dossier" do
-      it "produit une erreur et retourne false" do
-        remove_errors
-        res = pfolder.add "Du texte"
-        expect(res).to eq(false)
-        expect(RestSite).to have_error "Impossible d'écrire dans un dossier…"
-      end
+      it { expect{ pfolder.add "du texte"}.to raise_error "Can't add to a folder…" }
     end
     context "avec un fichier existant" do
       before :all do
-        @pfile.write "Le texte initial"
+        mytest.pfile.write "Le texte initial"
       end
       it "ajoute au bout du fichier et retourne true" do
         res = pfile.add "\nDu texte"
@@ -86,10 +74,17 @@ describe "Méthodes d'entrée/sortie de SuperFile" do
   describe "#read" do
     it { expect(p).to respond_to :read }
     context "avec un dossier" do
+      before :all do
+        @first_tmp = mytest.pfoldertmp + "unfichierfirst.rb"
+        @first_tmp.write "du texte"
+        @two_tmp    = mytest.pfoldertmp + "unfichiertwo.txt"
+        @two_tmp.write "de l'autre texte"
+      end
       it "retourne la liste des NAMES de files" do
         arr = pfolder.read
         expect(arr).to be_instance_of Array
-        expect(arr).to include( "main.rb")
+        expect(arr).to include( @first_tmp.name )
+        expect(arr).to include( @two_tmp.name )
       end
     end
     context "avec un fichier existant" do
@@ -99,46 +94,37 @@ describe "Méthodes d'entrée/sortie de SuperFile" do
       end
     end
     context "avec un fichier inexistant" do
-      it { expect(pinexistant.read).to eq(nil) }
-      it "produit une erreur" do
-        pinexistant.errors = nil
-        pinexistant.read
-        expect(pinexistant.errors).to_not eq(nil)
-        expect(pinexistant.errors).to include (SuperFile::ERRORS[:inexistant] % {path: pinexistant.to_s})
-      end
+      it { expect{pinexistant.read}.to raise_error }
     end
   end
   
   #puts
   describe "#puts" do
     it { expect(p).to respond_to :puts }
-    context "avec un dossier" do
-      it { expect(pfolder.puts).to eq(nil) }
-      it "produit une erreur" do
-        pfolder.errors = nil
-        pfolder.puts
-        expect(RestSite).to have_error "Impossible d'écrire un dossier dans la page…"
-      end
-    end
     context "avec un fichier inexistant" do
-      it { expect(pinexistant.puts).to eq(nil) }
-      it "produit une erreur" do
-        pinexistant.errors = nil
-        pinexistant.puts
-        expect(pinexistant.errors).to_not eq(nil)
-        expect(pinexistant.errors).to include (SuperFile::ERRORS[:inexistant] % {path: pinexistant.to_s})
-      end
+      it { expect{pinexistant.puts}.to raise_error SuperFile::ERRORS[:inexistant] % {path: pinexistant.to_s} }
+    end
+    context "avec un dossier" do
+      it { expect{pfolder.puts}.to raise_error "Can't (out)put a folder…" }
     end
     context "avec un fichier valide (ERB)" do
       before :all do
-        remove_body_content
         @id_div = "mondiv#{Time.now.to_i}"
-        @pfileerb.write "<div id='#{@id_div}'>Le fichier à #{Time.now}</div>"
+        @text = "Le fichier à #{Time.now}"
+        mytest.pfileerb.write "<div id='#{@id_div}'>#{@text}</div>"
       end
-      it { expect(pfileerb.puts).to eq(true) }
-      it "écrit le code dans la page" do
+      it "écrit le code en sortie" do
+        tmpoutput = pfoldertmp + 'outputprov.txt'
+        fd      = IO.sysopen(tmpoutput.path, "w")
+        $stdout = IO.new( fd ,"w")
         pfileerb.puts
-        expect(body_content).to have_tag('div', with: {id: @id_div})
+        $stdout.flush
+        code = tmpoutput.read.to_s
+        tmpoutput.remove if tmpoutput.exist?
+        $stdout = STDOUT
+        
+        expect(code).to have_tag('div', with: {id: @id_div}, text: @text)
+        # puts code
       end
     end
   end

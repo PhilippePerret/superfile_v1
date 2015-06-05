@@ -15,8 +15,7 @@ class SuperFile
         return add_error e.message
       end
     else
-      # Si c'est un dossier
-      return add_error(ERRORS[:cant_write_a_folder])
+      raise "Can't write a folder…"
     end
   end
   
@@ -27,7 +26,7 @@ class SuperFile
       File.open(path, 'a'){ |f| f.write str }
       return true
     else
-      error ERRORS[:cant_write_a_folder]
+      raise "Can't add to a folder…"
     end
   end
   alias :append :add
@@ -36,17 +35,25 @@ class SuperFile
   # Lit le fichier ou retourne la liste des NOMS de files du 
   # dossier
   def read
-    if exist?
-      if file?
-        # Pour un fichier
-        File.read(path).force_encoding('utf-8')
-      else
-        # Pour un dossier
-        Dir.glob("#{path}/*").collect {|m| File.basename(m) }
-      end
+    raise ERRORS[:inexistant] % {path: path} unless exist?
+    if file?
+      # Pour un fichier
+      File.read(path).force_encoding('utf-8')
     else
-      add_error ERRORS[:inexistant] % {path: path}
-      return nil
+      # Pour un dossier
+      Dir.glob("#{path}/*").collect {|m| File.basename(m) }
+    end
+  end
+  
+  # Lit le fichier est l'écrit dans la sortie standard
+  alias :top_puts :puts
+  def puts
+    if false == exist?
+      raise ERRORS[:inexistant] % {path: path}
+    elsif folder?
+      raise "Can't (out)put a folder…"
+    else
+      top_puts read
     end
   end
   

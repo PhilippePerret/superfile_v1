@@ -1,7 +1,7 @@
 # encoding: UTF-8
 
-# require 'capybara/rspec'
-# require 'rspec-html-matchers'
+require 'capybara/rspec'
+require 'rspec-html-matchers'
 
 if RUBY_VERSION.to_i >= 2
   require_relative '_config'
@@ -11,7 +11,7 @@ end
 
 RSpec.configure do |config|
   # Pour les matchers RSpec
-  # config.include RSpecHtmlMatchers
+  config.include RSpecHtmlMatchers
   
   Dir["./spec/support/everytime/**/*.rb"].each { |m| require m }
   
