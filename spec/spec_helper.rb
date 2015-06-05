@@ -1,19 +1,19 @@
 # encoding: UTF-8
 
-
 # require 'capybara/rspec'
 # require 'rspec-html-matchers'
 
-if RUBY_VERSION > 2
+if RUBY_VERSION.to_i >= 2
   require_relative '_config'
 else
   require './spec/_config'
 end
 
-
 RSpec.configure do |config|
   # Pour les matchers RSpec
   # config.include RSpecHtmlMatchers
+  
+  Dir["./spec/support/everytime/**/*.rb"].each { |m| require m }
   
   # rspec-mocks config goes here. You can use an alternate test double
   # library (such as bogus or mocha) by changing the `mock_with` option here.
@@ -76,10 +76,37 @@ RSpec.configure do |config|
 =end
   
   config.before :all do
+    # On initialise tout un tas de fichiers/dossiers qui
+    # seront utiles
+    mytest.init
   end
+  config.after :all do
+    # On détruit le dossier temporaire qui a pu être
+    # construit pour le module de test
+    mytest.pfoldertmp.remove if mytest.pfoldertmp.exist?
+  end
+  
   config.before :suite do
   end
   config.after :suite do
   end
 
+  # À appeler au début de tous les describes
+  def lets_in_describe
+    let(:p)           { mytest.pfile }
+    let(:pfoldertmp)  { mytest.pfoldertmp }
+    let(:pfolder)     { mytest.pfolder }
+    let(:pfile)       { mytest.pfile }
+    let(:pfileerb)    { mytest.pfileerb }
+    let(:pfilemd)     { mytest.pfilemd }
+    let(:pfilehtml)   { mytest.pfilehtml }
+    let(:pinexistant) { mytest.pinexistant }
+  end
+
+  def mytest
+    @mytest ||= MyTest::new
+  end
+  
+  
+  
 end

@@ -5,47 +5,17 @@ Ce module contient :
 =end
 # require 'superfile'
 
-describe "SuperFile" do
-  before :all do
+describe "États des SuperFile" do
 
-    require './lib/superfile'
-    puts File.expand_path('.')
-
-    @pfoldertmp   = SuperFile::new './tmp/'
-    @pinexistant  = @pfoldertmp + 'nimportequoi'
-    
-    @pfile        = @pfoldertmp + 'fichiertest.txt'
-    @pfile.write "un texte provisoire"
-    
-    @pfileerb     = @pfoldertmp + 'fichiertest.erb'
-    @pfileerb.write "<%# Fichier erb de test %>\n<div>Un texte</div>"
-    
-    @pfilemd      = @pfoldertmp + 'fichiertest_update.md'
-    @pfilemd.write "#Grand titre\n\nLe paragraphe du fichier md\n\n##Sous titre"
-    
-    @pfilehtml    = @pfoldertmp + 'fichiertest.html'
-    @pfilehtml.write "<div>Un simple fichier HTML headless.</div>"
-    
-  end
-  after :all do
-    @pfoldertmp.remove if @pfoldertmp.exist?
-  end
+  lets_in_describe
   
-  let(:classe)      { SuperFile }
-  let(:p)           { @pfile }
-  let(:pfoldertmp)  { @pfoldertmp }
-  let(:pfile)       { @pfile }
-  let(:pfileerb)    { @pfileerb }
-  let(:pfilemd)     { @pfilemd }
   let(:pfilemarkdown) do
     @pfilemarkdown ||= begin
-      p = @pfoldertmp + 'dans/sousdossier/file.markdown'
+      p = mytest.pfoldertmp + 'dans/sousdossier/file.markdown'
       p.write "# Le titre\n\n> La note"
       p
     end
   end
-  let(:pfilehtml)   { @pfilehtml }
-  let(:pinexistant) { @pinexistant }
 
   # #exist?
   describe "#exist?" do
@@ -157,7 +127,7 @@ describe "SuperFile" do
   # #older_than?
   describe "#older_than?" do
     before :all do
-      @pyoung = SuperFile::new File.join(@pfoldertmp, "adetuire.md")
+      @pyoung = SuperFile::new File.join(mytest.pfoldertmp, "adetuire.md")
       sleep 1 # pour obtenir un fichier plus jeune
       @pyoung.write "Du texte"
     end
@@ -166,9 +136,7 @@ describe "SuperFile" do
     end
     it { expect(p).to respond_to :older_than? }
     context "avec un file inexistant" do
-      it "retourne nil" do
-        expect(pfile.older_than? pinexistant).to eq( nil )
-      end
+      it { expect(pfile.older_than? pinexistant).to eq( nil ) }
       it "produit une erreur" do
         pfile.errors = nil
         pfile.older_than? pinexistant
@@ -177,25 +145,17 @@ describe "SuperFile" do
     end
     context "avec deux fichiers de même date" do
       context "si strict est mis à true" do
-        it "retourne false" do
-          expect(pfile.older_than? pfile, true).to eq(false)
-        end
+        it { expect(pfile.older_than? pfile, true).to eq(false) }
       end
       context "si strict est à false (valeur par défaut)" do
-        it "retourne true" do
-          expect(pfile.older_than? pfile).to eq(true)
-        end
+        it { expect(pfile.older_than? pfile).to eq(true) }
       end
     end
     context "avec un fichier (sujet) plus vieux que l'argument" do
-      it "retourne true" do
-        expect(pfile.older_than? @pyoung).to eq(true)
-      end
+      it { expect(pfile.older_than? @pyoung).to eq(true) }
     end
     context "avec un fichier (sujet) plus jeune que l'argument" do
-      it "retourne false" do
-        expect(@pyoung.older_than? pfile).to eq(false)
-      end
+      it { expect(@pyoung.older_than? pfile).to eq(false) }
     end
   end
 

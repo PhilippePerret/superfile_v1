@@ -2,11 +2,13 @@
 class SuperFile
   
   def initialize given_path
-    given_path = File.join( given_path ) if given_path.class == Array
-    unless given_path.class == String
+    @path = case given_path
+    when String     then given_path
+    when Array      then File.join( given_path )
+    when SuperFile  then given_path.path
+    else
       raise ArgumentError, "SuperFile doit être instancié avec un string (path) ou un array (['path', 'to', 'the', 'file'])"
     end
-    @path = given_path
   end
   
   # Ré-initialise toutes les propriétés
