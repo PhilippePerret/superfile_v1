@@ -39,7 +39,7 @@ class SuperFile
       if file?
         File.unlink path
       else
-        FileUtils::rm_rf path
+        ::FileUtils::rm_rf path
       end
       return true
     else
@@ -154,8 +154,8 @@ class SuperFile
       return error "La méthode #update ne s'applique qu'aux fichiers Markdown"
     end
     # On peut opérer à l'actualisation
-    ::RestSite::Gem::require "kramdown"
-    ::RestSite::Gem::require "coderay"
+    top_require "kramdown"
+    top_require "coderay"
     chtml = Kramdown::Document.new(read, auto_ids: false, coderay_line_numbers: nil, coderay_default_lang: 'fr', syntax_highlighter: :coderay, coderay_css: :style).to_html
     # Ne pas utiliser le nom `code_html' qui est une propriété de l'instance
     html_path.remove if html_path.exist?

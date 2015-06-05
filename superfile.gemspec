@@ -28,6 +28,10 @@ Gem::Specification.new do |s|
   # s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
   # s.extensions  = %w( ext/wrapper_installer/extconf.rb )
   # s.executables   = %w( restsite )
+  
+  s.required_ruby_version = '>= 1.9.2'
+  s.add_dependency 'rspec',       '~> 3.0'
+  
 
   # s.add_development_dependency "tf"
   #s.add_development_dependency "smf-gem"

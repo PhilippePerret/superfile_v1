@@ -51,8 +51,6 @@ class SuperFile
     end
   end
   
-  
-  
   # Retourne true si le fichier Mardown possède un fichier HTML
   # up-to-date
   # Ne fonctionne qu'avec les fichiers Mardown
@@ -61,8 +59,8 @@ class SuperFile
   # avec la même hiérarchie de dossier que le fichier dans restsite
   def uptodate?
     unless exist? && markdown?
-      return error( ERRORS[:inexistant] % {path: path} ) unless exist?
-      return error "La méthode #uptodate? ne s'applique qu'aux fichiers Markdown"
+      raise error( ERRORS[:inexistant] % {path: path} ) unless exist?
+      raise "La méthode #uptodate? ne s'applique qu'aux fichiers Markdown."
     end
     return false if false == html_path.exist?
     self.older_than? html_path

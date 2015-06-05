@@ -1,17 +1,19 @@
 # encoding: UTF-8
 
 
-require 'capybara/rspec'
-require 'rspec-html-matchers'
+# require 'capybara/rspec'
+# require 'rspec-html-matchers'
+
 if RUBY_VERSION > 2
   require_relative '_config'
 else
   require './spec/_config'
 end
 
+
 RSpec.configure do |config|
   # Pour les matchers RSpec
-  config.include RSpecHtmlMatchers
+  # config.include RSpecHtmlMatchers
   
   # rspec-mocks config goes here. You can use an alternate test double
   # library (such as bogus or mocha) by changing the `mock_with` option here.
