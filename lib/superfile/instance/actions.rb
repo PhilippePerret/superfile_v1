@@ -61,16 +61,12 @@ class SuperFile
   # On en fait toujours un zip avant de le transmettre
   def download
     raise "Impossible de zipper le file #{path}…" unless zip && zip_path.exist?
-    unless RestSite::mode_test?
-      STDOUT.puts "Content-type: application/zip"
-      STDOUT.puts "Content-disposition: attachment;filename=\"#{zip_path.name}\""
-      STDOUT.puts "Content-length: #{zip_path.size}"
-      STDOUT.puts ""
-      STDOUT.puts File.open( zip_path.expanded_path, 'rb'){ |f| f.read }
-    end
+    STDOUT.puts "Content-type: application/zip"
+    STDOUT.puts "Content-disposition: attachment;filename=\"#{zip_path.name}\""
+    STDOUT.puts "Content-length: #{zip_path.size}"
+    STDOUT.puts ""
+    STDOUT.puts File.open( zip_path.expanded_path, 'rb'){ |f| f.read }
     zip_path.remove
-    # Est-ce qu'il faut interrompre ici ?
-    return true
   end
   
   
