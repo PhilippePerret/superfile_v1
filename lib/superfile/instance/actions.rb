@@ -70,22 +70,18 @@ class SuperFile
   end
   
   
+  class NotAUploadedFile < StandardError; end
   # Upload d'un fichier
-  # +tempfile+  Soit le StringIO du fichier, soit l'identifiant d'un
-  #             paramètre le contenant.
+  # +tempfile+  Le StringIO du fichier, comme obtenu par exemple par le
+  #             formulaire de soumission.
   # +option+    {Hash} d'options
   #   :change_name      Si FALSE, ne modifie pas le nom de ce fichier
   #                     Si TRUE (défaut), le nom donné à l'instanciation de
   #                     ce superfile est remplacé par le nom du fichier à 
   #                     uploader
-  class NotAUploadedFile < StandardError; end
   def upload tempfile, options = nil
-    return error "Il faut fournir le fichier des données à importer" if tempfile == ""
-    if [String, Symbol].include?( tempfile.class ) 
-      case param(tempfile)
-      when NilClass then raise ArgumentError, "Le paramètre `:#{tempfile}' est inconnu."
-      else tempfile = param(tempfile)
-      end
+    if tempfile.nil? || tempfile == ""
+      return error "Il faut fournir le fichier des données à importer"
     end
     raise NotAUploadedFile unless tempfile.respond_to? :original_filename
     options ||= {}
@@ -106,7 +102,7 @@ class SuperFile
     self.write tempfile.read.force_encoding('UTF-8')
   
   rescue NotAUploadedFile => e
-    raise ArgumentError, "L'argument envoyé à SuperFile#upload doit être le fichier StringIO du formulaire ou la clé (String ou Symbol) du paramètre qui le contient. Impossible d'uploader le fichier"
+    raise ArgumentError, "L'argument envoyé à SuperFile#upload doit être le fichier StringIO. Impossible d'uploader le fichier"
   rescue ArgumentError => e
     raise ArgumentError, "#{e.message} Impossible d'uploader le fichier"
   rescue Exception => e
@@ -115,7 +111,11 @@ class SuperFile
     return true
   end
   
-  # Zip le fichier/dossier
+  # Zip The File
+  # ------------
+  # +params+
+  #     :filename     [Optionnel] Zip file name. If not provided,
+  #                   name will be <affix>.zip
   def zip params = nil
     params ||= {}
     zip_final_path = if params.has_key?( :filename )
