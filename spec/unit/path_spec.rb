@@ -3,7 +3,7 @@ Ce module contient :
   - les tests des méthodes d'instances de SuperFile
   - les tests des paths définies (méthodes de classes)
 =end
-describe "Méthodes de path de SuperFile", focus: true do
+describe "Méthodes de path de SuperFile" do
 
   lets_in_describe
 

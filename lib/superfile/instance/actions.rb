@@ -8,13 +8,13 @@ class SuperFile
   # Sinon, retourne FALSE et produit une erreur
   def build
     if exist?
-      error ERRORS[:already_exists] % {path: self.path}
+      raise ERRORS[:already_exists] % {path: self.path}
     else
       begin
         make_dir self.path
         return self.exist?
       rescue Exception => e
-        error e.message
+        raise e.message
       end
     end
   end
@@ -35,34 +35,26 @@ class SuperFile
   
   # Détruit le fichier ou le dossier
   def remove
-    if exist?
-      if file?
-        File.unlink path
-      else
-        ::FileUtils::rm_rf path
-      end
-      return true
+    raise "Unable to find file #{path}" unless exist?
+    if file?
+      File.unlink path
     else
-      add_error ERRORS[:inexistant] % {path: path}
-      return true
+      ::FileUtils::rm_rf path
     end
+    return true
   end
   
   # Requiert le fichier ou tous les fichiers ruby du dossier (tous
   # ceux qui sont à la racine)
   alias :top_require :require
   def require
-    if exist?
-      if file?
-        top_require path
-      else
-        Dir["#{path}/*.rb"].each do |m| top_require m end
-      end
-      return true
+    raise "Unable de require file #{path}: it doesn't exist." unless exist?
+    if file?
+      top_require path
     else
-      add_error ERRORS[:inexistant] % {path: path}
-      return nil
+      Dir["#{path}/*.rb"].each do |m| top_require m end
     end
+    return true
   end
   
   # Download le fichier/dossier
@@ -149,9 +141,10 @@ class SuperFile
   # @return TRUE si l'actualisation a pu se faire
   # sinon FALSE
   def update
-    unless exist? && markdown?
-      return error( ERRORS[:inexistant] % {path: path} ) unless exist?
-      return error "La méthode #update ne s'applique qu'aux fichiers Markdown"
+    if false == exist?
+      raise ERRORS[:inexistant] % {path: path}
+    elsif false == markdown?
+      raise "You can update only real markdown file"
     end
     # On peut opérer à l'actualisation
     top_require "kramdown"

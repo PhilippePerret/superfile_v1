@@ -99,6 +99,7 @@ RSpec.configure do |config|
     let(:pfile)       { mytest.pfile }
     let(:pfileerb)    { mytest.pfileerb }
     let(:pfilemd)     { mytest.pfilemd }
+    let(:pfileruby)   { mytest.pfileruby }
     let(:pfilehtml)   { mytest.pfilehtml }
     let(:pinexistant) { mytest.pinexistant }
   end

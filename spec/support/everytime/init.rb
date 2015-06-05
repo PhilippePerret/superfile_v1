@@ -4,6 +4,7 @@ class MyTest
   attr_reader :pfoldertmp
   attr_reader :pinexistant
   attr_reader :pfile
+  attr_reader :pfileruby
   attr_reader :pfileerb
   attr_reader :pfilemd
   attr_reader :pfilehtml
@@ -21,6 +22,7 @@ class MyTest
     @pfile        = @pfoldertmp + 'fichiertest.txt'
     @pfile.write "un texte provisoire"
 
+    @pfileruby    = @pfoldertmp + "fichieruby.rb"
     @pfileerb     = @pfoldertmp + 'fichiertest.erb'
     @pfileerb.write "<%# Fichier erb de test %>\n<div>Un texte</div>"
 
