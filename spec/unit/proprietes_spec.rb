@@ -3,10 +3,9 @@ Ce module contient :
   - les tests des méthodes d'instances de SuperFile
   - les tests des paths définies (méthodes de classes)
 =end
-describe "Propriétés de SuperFile", focus: true do
+describe "Propriétés de SuperFile" do
 
   lets_in_describe
-  
 
   #to_str
   describe "#to_str" do
@@ -27,7 +26,34 @@ describe "Propriétés de SuperFile", focus: true do
     it { expect(pfolder.name).to eq('tmp') }
   end
   
-  # #dirname
+  #affixe
+  describe "#affixe" do
+    it { expect(p).to respond_to :affixe }
+    it { expect(p.affixe).to eq("fichiertest") }
+  end
+  
+  #extension
+  describe "#extension" do
+    it { expect(p).to respond_to :extension }
+    context "avec un dossier" do
+      it { expect(pfolder.extension).to eq(nil) }
+    end
+    context "avec un fichier" do
+      it "retourne la bonne extension" do
+        {
+          'fichier.txt' => 'txt', 
+          'fichier.mov' => 'mov', 
+          'fichier.txt.mov' => 'mov', 
+          'fichier.html' => 'html'
+        }.each do |fname, expected|
+          prov = pfoldertmp + fname
+          expect(prov.extension).to eq(expected)
+        end
+      end
+    end
+  end
+  
+  #dirname
   describe "#dirname" do
     it { expect(p).to respond_to :dirname }
     it { expect(p.dirname.path).to eq("./tmp") }
@@ -41,18 +67,7 @@ describe "Propriétés de SuperFile", focus: true do
     it { expect(pfolder.folder.path).to eq(File.dirname(pfolder)) }
   end
   
-  # #affixe
-  describe "#affixe" do
-    it { expect(p).to respond_to :affixe }
-    it { expect(p.affixe).to eq("fichiertest") }
-  end
   
-  #path_affixe
-  describe "#path_affixe" do
-    it { expect(p).to respond_to :path_affixe }
-    it { expect(p.path_affixe).to eq((p.folder + "fichiertest").to_s) }
-  end
-
   #size
   describe "#size" do
     it { expect(p).to respond_to :size }
@@ -108,38 +123,4 @@ describe "Propriétés de SuperFile", focus: true do
   end
   
   
-  # #path_with_ext
-  describe "#with_ext" do
-    it { expect(p).to respond_to :path_with_ext }
-    context "en fournissant une extension sans point" do
-      it "retourne le path avec l'extension fournie" do
-        expected = "./tmp/fichiertest.cor"
-        expect(p.path_with_ext( 'cor').to_s).to eq(expected)
-      end
-    end
-    context "en fournissant une extension avec point" do
-      it "retourne le bon path avec l'extension fournie" do
-        expected = "./tmp/fichiertest.ver"
-        expect(p.path_with_ext('ver').to_s).to eq(expected)
-      end
-    end
-  end
-  
-  #expanded_path
-  describe "#expanded_path" do
-    it { expect(pfolder).to respond_to :expanded_path }
-    it { expect(pfolder.expanded_path).to be_instance_of String }
-    it "retourne le path étendu" do
-      expected = File.expand_path pfolder.path
-      expect(pfolder.expanded_path).to start_with '/'
-      expect(pfolder.expanded_path).to eq(expected)
-    end
-  end
-  
-  #zip_path
-  describe "#zip_path" do
-    it { expect(pfolder).to respond_to :zip_path }
-    it {  expect(pfolder.zip_path).to be_instance_of ::SuperFile }
-    it { expect(pfolder.zip_path.to_s).to eq('./tmp.zip') }
-  end
 end

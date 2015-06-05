@@ -13,9 +13,20 @@ class SuperFile
 
   # Retire du path la valeur de {String|SuperFile} pathmoins
   def - pathmoins
-    psup = pathmoins.to_s.dup
-    psup << "/" unless psup.end_with? '/'
-    self.path.sub(/^#{Regexp::escape psup}/, '')
+    psup      = pathmoins.to_s.dup
+    # Si c'est à la fin
+    new_path = self.expanded_path.sub(/\/?#{Regexp::escape psup}$/, '')
+    unless new_path != self.expanded_path
+      # Essayer de retirer au début
+      psup_abs = File.expand_path(psup)
+      new_path = self.expanded_path.sub(/^#{Regexp::escape psup_abs}\/?/, '')
+    end
+    if new_path != self.expanded_path
+      new_path = new_path.sub(/^#{relative_folder}/, '.')
+      SuperFile::new new_path
+    else
+      nil
+    end
   end
   
 end
