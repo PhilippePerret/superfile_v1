@@ -24,13 +24,13 @@ Ruby-Gem to deal with files. A kind of Ruby's Pathname with usefull methods.
     # => Zip the folder
     
     myfile = myfolder + 'a_file.erb'
-    # => New SuperFile instance
+    # => New SuperFile instance in myfolder folder
     
     myfile.write "<div>Hello <%= pseudo %>!</div>"
-    # => Write to file
+    # => Write code to file
     
     myfile.append "<div>Some stuff again!</div>"
-    # => Add text to file
+    # => Add (append) text to file
     
     myfile.deserb user
     # => Parse ERB file with binding user

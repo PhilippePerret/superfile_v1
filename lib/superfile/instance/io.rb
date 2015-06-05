@@ -101,15 +101,6 @@ class SuperFile
       bindee = bindee.bind unless bindee.class == Binding
     end
     ERB::new( read ).result( bindee )
-  rescue RuntimeError => e
-    raise e if RestSite::mode_test?
-    error e.message
-    read
-  rescue Exception => e
-    raise e if RestSite::mode_test?
-    add_error "Une erreur de déserbage s'est produite en déserbant `#{path}'."
-    error e.message
-    return ""
   end
   
 end
