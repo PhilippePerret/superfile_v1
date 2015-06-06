@@ -181,8 +181,8 @@ describe "Méthodes de path de SuperFile" do
     end
   end
   
-  # #path_with_ext
-  describe "#with_ext" do
+  #path_with_ext
+  describe "#path_with_ext" do
     it { expect(p).to respond_to :path_with_ext }
     context "en fournissant une extension sans point" do
       it "retourne le path avec l'extension fournie" do
