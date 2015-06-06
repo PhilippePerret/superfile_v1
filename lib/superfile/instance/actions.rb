@@ -44,15 +44,30 @@ class SuperFile
     return true
   end
   
-  # Requiert le fichier ou tous les fichiers ruby du dossier (tous
-  # ceux qui sont à la racine)
   alias :top_require :require
-  def require
+  ##
+  # Require file (if a file) or all folder's files according to 
+  # +params+
+  #
+  # +params+ (only with folders)
+  #   :deep       If true (default), require in folder and all sub-folders
+  #   :only       Available values:
+  #               :root     Require only root's files
+  #               "a/sub/folder"    Require in this sub-folder
+  #               Default: Nil
+  def require params = nil
     raise "Unable de require file #{path}: it doesn't exist." unless exist?
     if file?
       top_require path
     else
-      Dir["#{path}/*.rb"].each do |m| top_require m end
+      params ||= {}
+      params.merge!( deep: true ) unless params.has_key? :deep
+      req_path = "#{path}/"
+      req_path += "#{params[:only]}/" if params[:only].class == String
+      params[:deep] = false     if params[:only] == :root
+      req_path << "**/"         if params[:deep]
+      req_path << "*.rb"
+      Dir[req_path].each { |m| top_require m }
     end
     return true
   end

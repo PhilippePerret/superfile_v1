@@ -108,6 +108,9 @@ RSpec.configure do |config|
     @mytest ||= MyTest::new
   end
   
+  def debug str
+    STDOUT.puts str
+  end
   
   
 end
