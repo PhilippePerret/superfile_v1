@@ -4,7 +4,7 @@ Test de l'upload d'un fichier fourni par un user, par exemple à l'aide
 d'un formulaire
 
 =end
-describe "Upload d'un fichier", :focus do
+describe "Upload d'un fichier" do
   
   before :all do
     @pfile = mytest.pfoldertmp + "asup.txt"

@@ -1,4 +1,4 @@
-describe "Méthode SuperFile#require", focus: true do
+describe "Méthode SuperFile#require" do
   
   lets_in_describe
   
