@@ -66,7 +66,11 @@ class SuperFile
     set_binding bind unless bind.nil?
     @code_html ||= begin
       c = ""
-      c << link_for_opening_in_textmate if self.respond_to?( :link_for_opening_in_textmate )
+      begin
+        c << link_for_opening_in_textmate if self.respond_to?( :link_for_opening_in_textmate )
+      rescue Exception => e
+        raise "#Erreur avec la méthode `SuperFile#link_for_opening_in_textmate' propre au programme : #{e.message}"
+      end
       c << case extension
       when 'erb'
         self.deserb @bind
