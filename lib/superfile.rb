@@ -1,7 +1,12 @@
-#!/usr/bin/env ruby
 # encoding: UTF-8
 
-require 'fileutils'
+# require 'fileutils'
+# require 'superfile/class'
+# require 'superfile/errors'
+# require 'superfile/instance'
+# module SuperFile
+#   extend self
+# end
 
 ['class', 'errors', 'instance'].each do |subfolder|
   if RUBY_VERSION.to_i >= 2
